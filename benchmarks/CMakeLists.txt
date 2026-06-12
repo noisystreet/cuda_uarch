@@ -26,5 +26,6 @@ add_custom_target(benchmarks ALL
         shared_mem_bank
         warp_scheduler_probe
         peak_compute_probe
+        sfu_probe
     COMMENT "Building all microbenchmarks"
 )
