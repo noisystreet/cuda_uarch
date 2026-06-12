@@ -1,0 +1,72 @@
+---
+# ─── clang-format config for cuda_uarch project ────────────────────────────
+# Based on LLVM style with customizations for CUDA C++.
+
+Language:        Cpp
+BasedOnStyle:    LLVM
+
+# ─── Indentation ───────────────────────────────────────────────────────────
+IndentWidth:      4
+TabWidth:         4
+UseTab:           Never
+AccessModifierOffset: -4
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
+
+# ─── Line length ────────────────────────────────────────────────────────────
+ColumnLimit:      100
+
+# ─── Braces ─────────────────────────────────────────────────────────────────
+BreakBeforeBraces:  Allman
+AllowShortFunctionsOnASingleLine:  Inline
+AllowShortIfStatementsOnASingleLine:  Never
+AllowShortLoopsOnASingleLine:  false
+
+# ─── Lambda ─────────────────────────────────────────────────────────────────
+AllowShortLambdasOnASingleLine:  Empty
+
+# ─── Spaces ─────────────────────────────────────────────────────────────────
+SpaceAfterTemplateKeyword: true
+SpaceBeforeParens:    ControlStatements
+SpaceInEmptyParentheses: false
+SpacesInAngles:       false
+SpacesInContainerLiterals: false
+SpacesInParentheses:  false
+SpacesInSquareBrackets: false
+
+# ─── Alignment ──────────────────────────────────────────────────────────────
+AlignAfterOpenBracket:  Align
+AlignConsecutiveAssignments:  false
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlines:  Left
+AlignOperands:        Align
+AlignTrailingComments: true
+
+# ─── Pointers & References ─────────────────────────────────────────────────
+PointerAlignment:    Right
+ReferenceAlignment:  Right
+
+# ─── Function declarations / definitions ───────────────────────────────────
+AlwaysBreakAfterDefinitionReturnType:  None
+AlwaysBreakAfterReturnType:  None
+
+# ─── Namespaces ────────────────────────────────────────────────────────────
+FixNamespaceComments: true
+NamespaceIndentation: All
+
+# ─── Includes ───────────────────────────────────────────────────────────────
+SortIncludes:        true
+IncludeBlocks:       Regroup
+IncludeCategories:
+  - Regex:           '^<.*\.h>'
+    Priority:        2
+  - Regex:           '^<.*>'
+    Priority:        3
+  - Regex:           '.*'
+    Priority:        1
+
+# ─── CUDA specifics ────────────────────────────────────────────────────────
+# Allow __global__, __device__, etc. to stay on the same line
+AllowShortBlocksOnASingleLine:  Never
+AlwaysBreakBeforeMultilineStrings: false
+...
