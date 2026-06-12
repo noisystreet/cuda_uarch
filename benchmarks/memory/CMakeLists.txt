@@ -15,3 +15,9 @@ add_executable(cache_size_probe
     cache_size_probe.cu
 )
 target_link_libraries(cache_size_probe PRIVATE uarch_common)
+
+# ─── Shared memory bank conflict probe ────────────────────────────────────
+add_executable(shared_mem_bank
+    shared_mem_bank.cu
+)
+target_link_libraries(shared_mem_bank PRIVATE uarch_common)
