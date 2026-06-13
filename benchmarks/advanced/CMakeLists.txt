@@ -24,3 +24,9 @@ add_executable(precision_probe
     precision_probe.cu
 )
 target_link_libraries(precision_probe PRIVATE uarch_common)
+
+# ─── Register file probe (occupancy, pressure, renaming) ──────────────────
+add_executable(register_probe
+    register_probe.cu
+)
+target_link_libraries(register_probe PRIVATE uarch_common)

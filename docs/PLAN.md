@@ -129,9 +129,10 @@ benchmarks/
 - **SM 占用率:** 调整 block 大小和寄存器/共享内存使用量
 - **block 分配策略:** 观察 block 在 SM 间的分布
 
-#### 5.3 寄存器文件 (🔲 待完成)
-- **寄存器数量:** 通过 `__launch_bounds__` 限制寄存器使用量
-- **寄存器重命名:** 通过寄存器依赖链探测重命名能力
+#### 5.3 寄存器文件 (✅ 完成)
+- ✅ 寄存器压力扫描（NRegs=2~128）
+- ✅ `__launch_bounds__` Occupancy 约束测试
+- ✅ 依赖链长度探测
 
 ---
 
@@ -209,7 +210,8 @@ cuda_uarch/
 │       ├── peak_compute_probe.cu   # ✅ CUDA Core + Tensor Core 峰值
 │       ├── sfu_probe.cu            # ✅ 特殊函数单元 (SFU)
 │       ├── denorm_probe.cu         # ✅ 非规格化数行为
-│       └── precision_probe.cu      # ✅ 数值精度分析
+│       ├── precision_probe.cu      # ✅ 数值精度分析
+│       └── register_probe.cu       # ✅ 寄存器文件分析
 ├── build/                     # CMake 构建目录
 ├── docs/
 │   ├── PLAN.md                # 本规划文件
@@ -237,7 +239,7 @@ cuda_uarch/
 | P2 | 特殊函数单元 (SFU) | 7 种 MUFU 指令 | ✅ |
 | P2 | Tensor Core 数值精度 | FP16/TF32 精度对比 | ✅ |
 | P2 | 非规格化数行为 | Denorm FTZ 阈值 | ✅ |
-| P2 | **寄存器文件** | `__launch_bounds__` + 寄存器依赖链 | 🔲 |
+| P2 | **寄存器文件** | `__launch_bounds__` + 寄存器依赖链 | ✅ |
 | P2 | **Block 调度 / Occupancy** | 占用率 + block 分配策略 | 🔲 |
 | P2 | **Warp Shuffle / 同步指令** | `__shfl_sync` / `__syncwarp` 等 | 🔲 |
 | P2 | **SASS 反汇编** | `nvdisasm` 分析指令编码 | 🔲 |
