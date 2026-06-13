@@ -22,6 +22,7 @@ make run-scheduler     # Warp scheduler (divergence, concurrency, fairness)
 make run-peak          # Peak compute (CUDA Core + Tensor Core)
 make run-sfu           # Special function unit throughput
 make run-denorm        # Tensor Core denormal behavior
+make run-precision     # Numerical precision analysis (TC vs CUDA Core)
 ```
 
 ## Code Conventions
