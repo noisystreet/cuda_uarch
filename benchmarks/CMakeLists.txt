@@ -30,5 +30,6 @@ add_custom_target(benchmarks ALL
         denorm_probe
         precision_probe
         register_probe
+        occupancy_probe
     COMMENT "Building all microbenchmarks"
 )

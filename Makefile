@@ -19,6 +19,7 @@
 #   run-denorm      — build + run denorm_probe
 #   run-precision   — build + run precision_probe
 #   run-register    — build + run register_probe
+#   run-occupancy   — build + run occupancy_probe
 #   format          — clang-format all source files
 #   check-env       — verify tool chain
 #   help            — print this message
@@ -34,7 +35,7 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
 .PHONY: all build configure debug clean rebuild \
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
-        run-register format check-env help
+        run-register run-occupancy format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
 all: build
@@ -92,6 +93,9 @@ run-precision: build
 run-register: build
 	$(BUILD_DIR)/benchmarks/advanced/register_probe
 
+run-occupancy: build
+	$(BUILD_DIR)/benchmarks/advanced/occupancy_probe
+
 # ─── Format ─────────────────────────────────────────────────────────────────
 format:
 	clang-format -i --style=file \
@@ -122,6 +126,7 @@ help:
 	@echo "  run-denorm        Build + run denorm_probe"
 	@echo "  run-precision     Build + run precision_probe"
 	@echo "  run-register      Build + run register_probe"
+	@echo "  run-occupancy     Build + run occupancy_probe"
 	@echo "  format            clang-format all source files"
 	@echo "  check-env         Verify tool chain"
 	@echo "  help              Print this message"

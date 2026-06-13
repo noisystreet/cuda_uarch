@@ -30,3 +30,9 @@ add_executable(register_probe
     register_probe.cu
 )
 target_link_libraries(register_probe PRIVATE uarch_common)
+
+# ─── Occupancy & Block scheduling probe ───────────────────────────────────
+add_executable(occupancy_probe
+    occupancy_probe.cu
+)
+target_link_libraries(occupancy_probe PRIVATE uarch_common)

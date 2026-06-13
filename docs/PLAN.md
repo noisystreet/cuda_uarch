@@ -125,9 +125,10 @@ benchmarks/
 - **公平性:** 轮转调度 (round-robin)，无优先级 ✅
 - **并发 warp 上限:** 48 (硬件限制) ✅
 
-#### 5.2 Block 调度 (🔲 待完成)
-- **SM 占用率:** 调整 block 大小和寄存器/共享内存使用量
-- **block 分配策略:** 观察 block 在 SM 间的分布
+#### 5.2 Block 调度 (✅ 完成)
+- ✅ Block Size Sweep（32~1024 threads）
+- ✅ 共享内存约束对 occupancy 的影响测试
+- ✅ Block 分发时间/并发度探测
 
 #### 5.3 寄存器文件 (✅ 完成)
 - ✅ 寄存器压力扫描（NRegs=2~128）
@@ -211,7 +212,8 @@ cuda_uarch/
 │       ├── sfu_probe.cu            # ✅ 特殊函数单元 (SFU)
 │       ├── denorm_probe.cu         # ✅ 非规格化数行为
 │       ├── precision_probe.cu      # ✅ 数值精度分析
-│       └── register_probe.cu       # ✅ 寄存器文件分析
+│       ├── register_probe.cu       # ✅ 寄存器文件分析
+│       └── occupancy_probe.cu      # ✅ Occupancy / Block 调度分析
 ├── build/                     # CMake 构建目录
 ├── docs/
 │   ├── PLAN.md                # 本规划文件
@@ -240,7 +242,7 @@ cuda_uarch/
 | P2 | Tensor Core 数值精度 | FP16/TF32 精度对比 | ✅ |
 | P2 | 非规格化数行为 | Denorm FTZ 阈值 | ✅ |
 | P2 | **寄存器文件** | `__launch_bounds__` + 寄存器依赖链 | ✅ |
-| P2 | **Block 调度 / Occupancy** | 占用率 + block 分配策略 | 🔲 |
+| P2 | **Block 调度 / Occupancy** | 占用率 + block 分配策略 | ✅ |
 | P2 | **Warp Shuffle / 同步指令** | `__shfl_sync` / `__syncwarp` 等 | 🔲 |
 | P2 | **SASS 反汇编** | `nvdisasm` 分析指令编码 | 🔲 |
 | P2 | **原子操作** | `atomicAdd` 吞吐和延迟 | 🔲 |
