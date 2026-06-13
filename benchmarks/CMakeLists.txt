@@ -27,5 +27,6 @@ add_custom_target(benchmarks ALL
         warp_scheduler_probe
         peak_compute_probe
         sfu_probe
+        denorm_probe
     COMMENT "Building all microbenchmarks"
 )

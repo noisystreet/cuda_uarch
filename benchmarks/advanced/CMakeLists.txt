@@ -12,3 +12,9 @@ add_executable(sfu_probe
     sfu_probe.cu
 )
 target_link_libraries(sfu_probe PRIVATE uarch_common)
+
+# ─── Denormal behavior probe (Tensor Core vs CUDA Core) ──────────────────
+add_executable(denorm_probe
+    denorm_probe.cu
+)
+target_link_libraries(denorm_probe PRIVATE uarch_common)
