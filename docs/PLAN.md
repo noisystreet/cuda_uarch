@@ -146,9 +146,10 @@ benchmarks/
 - 🔲 Tile size 对比 (16x16x16 vs 8x8x4 等)
 - 🔲 Tensor Core vs CUDA Core 切换开销
 
-#### 6.2 混合精度与特殊指令 (🔲 待完成)
-- __shfl / __shfl_down / __shfl_xor 等 warp shuffle 指令延迟
-- __syncwarp / __ballot_sync 等同步指令开销
+#### 6.2 混合精度与特殊指令 (✅ 完成)
+- ✅ __shfl / __shfl_down / __shfl_xor 等 warp shuffle 指令吞吐
+- ✅ __syncwarp / __ballot_sync 等同步指令开销
+- ✅ __match_all_sync 吞吐
 
 #### 6.3 功耗与频率 (🔲 待完成)
 - 不同负载下的 GPU 频率变化（nvidia-smi dmon）
@@ -243,7 +244,7 @@ cuda_uarch/
 | P2 | 非规格化数行为 | Denorm FTZ 阈值 | ✅ |
 | P2 | **寄存器文件** | `__launch_bounds__` + 寄存器依赖链 | ✅ |
 | P2 | **Block 调度 / Occupancy** | 占用率 + block 分配策略 | ✅ |
-| P2 | **Warp Shuffle / 同步指令** | `__shfl_sync` / `__syncwarp` 等 | 🔲 |
+| P2 | **Warp Shuffle / 同步指令** | `__shfl_sync` / `__syncwarp` 等 | ✅ |
 | P2 | **SASS 反汇编** | `nvdisasm` 分析指令编码 | 🔲 |
 | P2 | **原子操作** | `atomicAdd` 吞吐和延迟 | 🔲 |
 | P3 | **功耗-频率曲线** | nvidia-smi dmon 监测 | 🔲 |

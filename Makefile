@@ -35,7 +35,7 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
 .PHONY: all build configure debug clean rebuild \
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
-        run-register run-occupancy format check-env help
+        run-register run-occupancy run-shuffle format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
 all: build
@@ -96,6 +96,9 @@ run-register: build
 run-occupancy: build
 	$(BUILD_DIR)/benchmarks/advanced/occupancy_probe
 
+run-shuffle: build
+	$(BUILD_DIR)/benchmarks/scheduler/warp_shuffle_probe
+
 # ─── Format ─────────────────────────────────────────────────────────────────
 format:
 	clang-format -i --style=file \
@@ -127,6 +130,7 @@ help:
 	@echo "  run-precision     Build + run precision_probe"
 	@echo "  run-register      Build + run register_probe"
 	@echo "  run-occupancy     Build + run occupancy_probe"
+	@echo "  run-shuffle       Build + run warp_shuffle_probe"
 	@echo "  format            clang-format all source files"
 	@echo "  check-env         Verify tool chain"
 	@echo "  help              Print this message"
