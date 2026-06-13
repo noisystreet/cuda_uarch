@@ -18,3 +18,9 @@ add_executable(denorm_probe
     denorm_probe.cu
 )
 target_link_libraries(denorm_probe PRIVATE uarch_common)
+
+# ─── Numerical precision probe (TC vs CUDA Core) ──────────────────────────
+add_executable(precision_probe
+    precision_probe.cu
+)
+target_link_libraries(precision_probe PRIVATE uarch_common)

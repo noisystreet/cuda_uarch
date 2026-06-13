@@ -28,5 +28,6 @@ add_custom_target(benchmarks ALL
         peak_compute_probe
         sfu_probe
         denorm_probe
+        precision_probe
     COMMENT "Building all microbenchmarks"
 )
