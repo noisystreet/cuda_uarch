@@ -239,9 +239,10 @@ void test_basic_accuracy()
         float expected_tc_f16 = 16.0f * t.a_f32 * t.b_f32 + t.c_f32;
 
         // Tensor Core TF32 MMA (k=8, 所以 8 次乘加)
+        float h_tc_tf32[4];
         tc_tf32_mma_precision<<<1, 32>>>(d_tc_out.get(), t.a_f32, t.b_f32, t.c_f32, 1);
         CUDA_CHECK(cudaDeviceSynchronize());
-        d_tc_out.download(h_tc_f16);
+        d_tc_out.download(h_tc_tf32);
         float expected_tc_tf32 = 8.0f * t.a_f32 * t.b_f32 + t.c_f32;
 
         // 打印
@@ -249,13 +250,11 @@ void test_basic_accuracy()
         printf("  CUDA Core FP16:  %.10g  (单个 FMA)\n", __half2float(h_f16));
         printf("  CUDA Core FP32:  %.15g  (单个 FMA, 参考基准)\n", h_f32);
         printf("  TC FP16  MMA:    %.15g  (16次 FMA, 期望 %.10g)\n", h_tc_f16[0], expected_tc_f16);
-        printf("  TC TF32  MMA:    %.15g  (8次 FMA, 期望 %.10g)\n", h_tc_f16[0], expected_tc_tf32);
+        printf("  TC TF32  MMA:    %.15g  (8次 FMA, 期望 %.10g)\n", h_tc_tf32[0], expected_tc_tf32);
 
         // 精度对比
         int ulp_tc_f16 = ulp_diff_fp32(h_tc_f16[0], expected_tc_f16);
-        int ulp_tc_tf32 = ulp_diff_fp32(h_tc_f16[0], expected_tc_tf32);
-        printf("  ULP vs 期望:  TC FP16=%d  TC TF32=%d  CUDA FP32=0 (ref)\n", ulp_tc_f16,
-               ulp_tc_tf32);
+        int ulp_tc_tf32 = ulp_diff_fp32(h_tc_tf32[0], expected_tc_tf32);
         printf("\n");
     }
 }

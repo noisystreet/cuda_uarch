@@ -53,14 +53,24 @@ bash tools/check_env.sh
 | **global_mem_latency** | `benchmarks/memory/global_mem_latency.cu` | Global memory load latency via pointer chasing |
 | **global_mem_bw** | `benchmarks/memory/global_mem_bw.cu` | Read/write/copy bandwidth vs. array size |
 | **cache_size_probe** | `benchmarks/memory/cache_size_probe.cu` | Cache size, cache line, and associativity probing |
+| **shared_mem_bank** | `benchmarks/memory/shared_mem_bank.cu` | Shared memory bank conflict stride/broadcast/multi-warp |
+| **warp_scheduler_probe** | `benchmarks/scheduler/warp_scheduler_probe.cu` | Warp divergence, concurrency, and fairness |
+| **peak_compute_probe** | `benchmarks/advanced/peak_compute_probe.cu` | Peak FP32/FP64/INT32/FP16/INT8/TF32 throughput |
+| **sfu_probe** | `benchmarks/advanced/sfu_probe.cu` | Special function unit throughput (cos/sin/exp/log/rsqrt/tanh/pow) |
+| **denorm_probe** | `benchmarks/advanced/denorm_probe.cu` | Tensor Core vs CUDA Core denormal behavior |
+| **precision_probe** | `benchmarks/advanced/precision_probe.cu` | Tensor Core vs CUDA Core numerical accuracy |
+| **register_probe** | `benchmarks/advanced/register_probe.cu` | Register pressure, occupancy, dependency chains |
+| **occupancy_probe** | `benchmarks/advanced/occupancy_probe.cu` | SM occupancy and block scheduling analysis |
 
-### Planned
+### Planned (future work)
 
-- Shared memory bank conflict analysis
-- Warp scheduler / divergence probes
-- Occupancy analysis
-- Tensor Core benchmarks
-- Warp shuffle and special function unit probes
+- Warp shuffle / sync instructions
+- Atomic operations
+- PCIe bandwidth
+- CUDA Stream concurrency
+- Unified Virtual Memory
+- Power / frequency curves
+- Texture / constant memory probes
 
 ---
 
@@ -120,8 +130,8 @@ cuda_uarch/
 │   ├── common/          # Shared infra: config.h, timer.h, utils.h
 │   ├── instruction/     # Instruction-level probes
 │   ├── memory/          # Memory hierarchy probes
-│   ├── scheduler/       # (planned)
-│   └── advanced/        # (planned: Tensor Core, warp shuffle, SFU)
+│   ├── scheduler/       # Warp scheduler probes
+│   └── advanced/        # Tensor Core, SFU, denormal, precision, register, occupancy
 ├── cmake/               # CMake modules
 ├── docs/                # Documentation
 ├── tools/               # check_env.sh, plot_results.py, install-precommit.sh
