@@ -20,6 +20,7 @@
 #   run-precision   — build + run precision_probe
 #   run-register    — build + run register_probe
 #   run-occupancy   — build + run occupancy_probe
+#   run-switch      — build + run switch_probe (TC vs CUDA Core switch overhead)
 #   format          — clang-format all source files
 #   check-env       — verify tool chain
 #   help            — print this message
@@ -35,7 +36,7 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
 .PHONY: all build configure debug clean rebuild \
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
-        run-register run-occupancy run-shuffle format check-env help
+        run-register run-occupancy run-shuffle run-switch format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
 all: build
@@ -98,6 +99,9 @@ run-occupancy: build
 
 run-shuffle: build
 	$(BUILD_DIR)/benchmarks/scheduler/warp_shuffle_probe
+
+run-switch: build
+	$(BUILD_DIR)/benchmarks/advanced/switch_probe
 
 # ─── Format ─────────────────────────────────────────────────────────────────
 format:

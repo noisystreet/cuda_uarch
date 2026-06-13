@@ -144,7 +144,7 @@ benchmarks/
 - ✅ 非规格化数行为 (denorm FTZ) 阈值发现
 - ✅ 数值精度分析 (FP32 内部累加器)
 - 🔲 Tile size 对比 (16x16x16 vs 8x8x4 等)
-- 🔲 Tensor Core vs CUDA Core 切换开销
+- ✅ Tensor Core vs CUDA Core 切换开销 — **无额外开销，可无缝交替**
 
 #### 6.2 混合精度与特殊指令 (✅ 完成)
 - ✅ __shfl / __shfl_down / __shfl_xor 等 warp shuffle 指令吞吐

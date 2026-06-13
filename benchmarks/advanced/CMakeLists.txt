@@ -36,3 +36,9 @@ add_executable(occupancy_probe
     occupancy_probe.cu
 )
 target_link_libraries(occupancy_probe PRIVATE uarch_common)
+
+# ─── Tensor Core vs CUDA Core switching overhead probe ──────────────────
+add_executable(switch_probe
+    switch_probe.cu
+)
+target_link_libraries(switch_probe PRIVATE uarch_common)
