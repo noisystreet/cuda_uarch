@@ -7,8 +7,8 @@ out/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-Makefile
-!Makefile               # our convenience Makefile
+/Makefile               # CMake generates Makefile in build/, ignore all
+!/Makefile              # except our root convenience Makefile
 CTestTestfile.cmake
 
 # ─── Compiled binaries / libraries ──────────────────────────────────────────
