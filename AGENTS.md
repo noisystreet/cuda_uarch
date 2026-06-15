@@ -19,10 +19,16 @@ make run-mem-bw        # Global memory bandwidth
 make run-cache-size    # Cache hierarchy (size, line, associativity)
 make run-shmem-bank    # Shared memory bank conflict
 make run-scheduler     # Warp scheduler (divergence, concurrency, fairness)
+make run-shuffle       # Warp shuffle / sync instruction throughput
 make run-peak          # Peak compute (CUDA Core + Tensor Core)
 make run-sfu           # Special function unit throughput
 make run-denorm        # Tensor Core denormal behavior
 make run-precision     # Numerical precision analysis (TC vs CUDA Core)
+make run-register      # Register file pressure analysis
+make run-occupancy     # SM occupancy / block scheduling
+make run-switch        # Tensor Core vs CUDA Core switching overhead
+make run-all           # Run all benchmarks and save results
+make plot              # Generate plots from archived results
 ```
 
 ## Code Conventions
@@ -42,8 +48,8 @@ cuda_uarch/
 │   ├── common/          # config.h, timer.h, utils.h (shared infra)
 │   ├── instruction/     # latency_probe, throughput_probe
 │   ├── memory/          # global_mem_latency, global_mem_bw, cache_size_probe, shared_mem_bank
-│   ├── scheduler/       # warp_scheduler_probe
-│   └── advanced/        # peak_compute_probe, sfu_probe, denorm_probe
+│   ├── scheduler/       # warp_scheduler_probe, warp_shuffle_probe
+│   └── advanced/        # peak_compute, sfu, denorm, precision, register, occupancy, switch
 ├── cmake/               # CMake modules
 ├── docs/                # PLAN.md, ANALYSIS.md
 ├── tools/               # check_env.sh, plot_results.py, install-precommit.sh

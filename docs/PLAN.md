@@ -50,8 +50,8 @@ benchmarks/
 ├── common/          # config.h, timer.h, utils.h (公共库)
 ├── instruction/     # 指令级探针 (2 probes)
 ├── memory/          # 内存层次探针 (4 probes)
-├── scheduler/       # 调度器探针 (1 probe)
-└── advanced/        # 高级专题 (4 probes)
+├── scheduler/       # 调度器 + shuffle 探针 (2 probes)
+└── advanced/        # 高级专题 (7 probes)
 ```
 
 关键设计要点：
@@ -125,12 +125,16 @@ benchmarks/
 - **公平性:** 轮转调度 (round-robin)，无优先级 ✅
 - **并发 warp 上限:** 48 (硬件限制) ✅
 
-#### 5.2 Block 调度 (✅ 完成)
+#### 5.2 Warp Shuffle / 同步指令 (✅ 完成)
+- ✅ `__shfl_sync` / `__shfl_down` / `__shfl_xor` 吞吐
+- ✅ `__syncwarp` / `__ballot_sync` / `__match_all_sync` 开销
+
+#### 5.3 Block 调度 (✅ 完成)
 - ✅ Block Size Sweep（32~1024 threads）
 - ✅ 共享内存约束对 occupancy 的影响测试
 - ✅ Block 分发时间/并发度探测
 
-#### 5.3 寄存器文件 (✅ 完成)
+#### 5.4 寄存器文件 (✅ 完成)
 - ✅ 寄存器压力扫描（NRegs=2~128）
 - ✅ `__launch_bounds__` Occupancy 约束测试
 - ✅ 依赖链长度探测
@@ -164,9 +168,10 @@ benchmarks/
 
 ### Phase 7: 综合分析报告 (✅ 完成)
 
-- **产出:** `docs/ANALYSIS.md` — 13 章完整分析报告 ✅
+- **产出:** `docs/ANALYSIS.md` — 17 章完整分析报告 ✅
 - 覆盖：指令延迟/吞吐、缓存层次、内存带宽/延迟、Warp 调度、峰值算力、
-  SFU、Bank Conflict、非规格化数行为、数值精度 ✅
+  SFU、Bank Conflict、非规格化数行为、数值精度、寄存器文件、Occupancy、
+  Tensor Core 切换开销 ✅
 - 与文献交叉验证（Ada Lovelace 架构规格） ✅
 
 ---
@@ -176,11 +181,12 @@ benchmarks/
 ```
 cuda_uarch/
 ├── CMakeLists.txt             # 根 CMake (C++20, CUDA)
-├── Makefile                   # 便捷构建/运行命令
+├── Makefile                   # 便捷构建/运行命令 (含 run-all, plot)
 ├── .clang-format              # 代码格式配置
 ├── .gitignore
 ├── AGENTS.md                  # AI Agent 指南（含约束规则）
 ├── PLAN.md                    # 本规划文件
+├── .github/workflows/ci.yml   # GitHub Actions CI (自托管 GPU runner)
 ├── cmake/
 │   ├── CompilerOptions.cmake  # NVCC / CXX 编译选项
 │   └── DetectCUDAArch.cmake   # 自动探测本地 GPU compute capability
@@ -206,19 +212,21 @@ cuda_uarch/
 │   │   └── shared_mem_bank.cu     # ✅ 共享内存 Bank Conflict
 │   ├── scheduler/
 │   │   ├── CMakeLists.txt
-│   │   └── warp_scheduler_probe.cu # ✅ Warp 调度（分歧/并发/公平性）
+│   │   ├── warp_scheduler_probe.cu  # ✅ Warp 调度（分歧/并发/公平性）
+│   │   └── warp_shuffle_probe.cu    # ✅ Warp shuffle / 同步指令
 │   └── advanced/
 │       ├── CMakeLists.txt
-│       ├── peak_compute_probe.cu   # ✅ CUDA Core + Tensor Core 峰值
-│       ├── sfu_probe.cu            # ✅ 特殊函数单元 (SFU)
-│       ├── denorm_probe.cu         # ✅ 非规格化数行为
-│       ├── precision_probe.cu      # ✅ 数值精度分析
-│       ├── register_probe.cu       # ✅ 寄存器文件分析
-│       └── occupancy_probe.cu      # ✅ Occupancy / Block 调度分析
+│       ├── peak_compute_probe.cu    # ✅ CUDA Core + Tensor Core 峰值
+│       ├── sfu_probe.cu             # ✅ 特殊函数单元 (SFU)
+│       ├── denorm_probe.cu          # ✅ 非规格化数行为
+│       ├── precision_probe.cu       # ✅ 数值精度分析
+│       ├── register_probe.cu        # ✅ 寄存器文件分析
+│       ├── occupancy_probe.cu       # ✅ Occupancy / Block 调度
+│       └── switch_probe.cu          # ✅ TC vs CUDA Core 切换开销
 ├── build/                     # CMake 构建目录
 ├── docs/
 │   ├── PLAN.md                # 本规划文件
-│   └── ANALYSIS.md            # 13 章完整分析报告
+│   └── ANALYSIS.md            # 17 章完整分析报告
 ├── data/
 │   └── results/               # 实验结果 CSV
 └── reports/
@@ -234,26 +242,31 @@ cuda_uarch/
 | P0 | Phase 1 + 2 | 环境搭建 + 基准框架 | ✅ |
 | P0 | 指令延迟 + 吞吐 | FADD/FMUL/FFMA/IADD | ✅ |
 | P0 | 全局内存延迟与带宽 | Pointer chasing + 连续访问 | ✅ |
+| P0 | **数据归档 + run-all** | `make run-all` 一键运行所有 benchmark + 结果归档 | ✅ |
+| P0 | **CI 持续集成** | GitHub Actions 构建 + clang-format 检查 | ✅ |
 | P1 | 缓存层次 | L1=128KB, L2=32MB, line=128B | ✅ |
 | P1 | 共享内存 Bank Conflict | stride 扫描 + 广播 | ✅ |
-| P1 | Warp 调度 | 分歧/并发/公平性 | ✅ |
+| P1 | Warp 调度 + Shuffle | 分歧/并发/公平性 + shuffle/sync 指令 | ✅ |
 | P1 | **常量内存广播机制** | 常量内存读取延迟验证 | 🔲 |
+| P1 | **原子操作** | `atomicAdd` (FP32/INT32) 吞吐和延迟 | 🔲 |
 | P2 | 峰值算力 | CUDA Core + Tensor Core | ✅ |
 | P2 | 特殊函数单元 (SFU) | 7 种 MUFU 指令 | ✅ |
 | P2 | Tensor Core 数值精度 | FP16/TF32 精度对比 | ✅ |
 | P2 | 非规格化数行为 | Denorm FTZ 阈值 | ✅ |
-| P2 | **寄存器文件** | `__launch_bounds__` + 寄存器依赖链 | ✅ |
-| P2 | **Block 调度 / Occupancy** | 占用率 + block 分配策略 | ✅ |
-| P2 | **Warp Shuffle / 同步指令** | `__shfl_sync` / `__syncwarp` 等 | ✅ |
-| P2 | **SASS 反汇编** | `nvdisasm` 分析指令编码 | 🔲 |
-| P2 | **原子操作** | `atomicAdd` 吞吐和延迟 | 🔲 |
-| P3 | **功耗-频率曲线** | nvidia-smi dmon 监测 | 🔲 |
-| P3 | **纹理/常量内存** | 纹理缓存行为 | 🔲 |
-| P3 | **PCIe 带宽** | Host↔Device 传输 | 🔲 |
-| P3 | **CUDA Stream 并发** | 多 stream 并发执行 | 🔲 |
-| P3 | **UVM 统一内存** | page fault 和数据迁移 | 🔲 |
-
-**图例:** ✅ = 已完成  🔄 = 部分完成  🔲 = 待完成
+| P2 | 寄存器文件 + Occupancy | `__launch_bounds__` + Block 调度策略 | ✅ |
+| P2 | Tensor Core 切换开销 | TC vs CUDA Core 无缝交替 | ✅ |
+| P2 | **SASS 反汇编分析** | `nvdisasm` 分析指令编码、FU 布局 | 🔲 |
+| P2 | **L1 关联度方法改进** | 当前 cache_size_probe 关联度探测不可靠 | 🔲 |
+| P2 | **Tensor Core Tile size** | m16n16k16 vs m8n8k4 等不同 tile 吞吐 | 🔲 |
+| P2 | **指令组合吞吐 (ILP 混合)** | FADD+FMUL、FFMA+IADD 等混合指令扫描 | 🔲 |
+| P2 | **nsys/ncu 交叉验证** | Nsight Compute 验证关键 benchmark 结果 | 🔲 |
+| P3 | **功耗-频率曲线** | nvidia-smi dmon 追踪不同负载下的频率 | 🔲 |
+| P3 | **纹理/常量内存** | 纹理缓存行为、常量广播 | 🔲 |
+| P3 | **PCIe 带宽** | Host↔Device 传输速率 | 🔲 |
+| P3 | **CUDA Stream 并发** | 多 stream 并发执行分析 | 🔲 |
+| P3 | **UVM 统一内存** | page fault 和数据迁移开销 | 🔲 |
+| P3 | **跨架构对比** | Turing / Ampere 横向对比（如有硬件） | 🔲 |
+| P3 | **报告自动生成** | plot_results.py 批量生成所有图表 | 🔲 |
 
 ---
 

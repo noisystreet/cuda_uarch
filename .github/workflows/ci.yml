@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: [self-hosted, gpu]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check environment
+        run: bash tools/check_env.sh
+
+      - name: Configure (Release, sm_89)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=89
+
+      - name: Build
+        run: cmake --build build -j$(nproc)
+
+      - name: Clang-format check
+        run: |
+          clang-format -i --style=file \
+            $(find . \( -name '*.cu' -o -name '*.h' \) ! -path './build/*' ! -path './.git/*')
+          git diff --exit-code || { echo "Formatting issues found. Run 'make format'."; exit 1; }
+
+      - name: Smoke test (latency_probe)
+        run: build/benchmarks/instruction/latency_probe 2>&1 | head -30

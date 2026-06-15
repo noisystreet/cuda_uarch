@@ -36,7 +36,8 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
 .PHONY: all build configure debug clean rebuild \
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
-        run-register run-occupancy run-shuffle run-switch format check-env help
+        run-register run-occupancy run-shuffle run-switch \
+        run-all plot format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
 all: build
@@ -102,6 +103,77 @@ run-shuffle: build
 
 run-switch: build
 	$(BUILD_DIR)/benchmarks/advanced/switch_probe
+
+# ─── Run all ─────────────────────────────────────────────────────────────────
+RESULTS_DIR ?= data/results
+RESULTS_FILE = $(RESULTS_DIR)/benchmark_$$(date +%Y%m%d_%H%M%S).csv
+
+run-all: build
+	@mkdir -p $(RESULTS_DIR)
+	@echo "=== Running all benchmarks ==="
+	@echo "Results -> $(RESULTS_FILE)"
+	@echo "==========================================" > $(RESULTS_FILE)
+	@echo "GPU: $$($(BUILD_DIR)/benchmarks/instruction/latency_probe 2>&1 | head -1)" >> $(RESULTS_FILE)
+	@echo "Date: $$(date)" >> $(RESULTS_FILE)
+	@echo "==========================================" >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- latency_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/instruction/latency_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- throughput_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/instruction/throughput_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- global_mem_latency ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/memory/global_mem_latency >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- global_mem_bw ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/memory/global_mem_bw >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- cache_size_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/memory/cache_size_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- shared_mem_bank ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/memory/shared_mem_bank >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- warp_scheduler_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/scheduler/warp_scheduler_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- warp_shuffle_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/scheduler/warp_shuffle_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- peak_compute_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/peak_compute_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- sfu_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/sfu_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- denorm_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/denorm_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- precision_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/precision_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- register_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/register_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- occupancy_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/occupancy_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- switch_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/switch_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "=== ALL BENCHMARKS COMPLETE ===" | tee -a $(RESULTS_FILE)
+
+# ─── Plot ────────────────────────────────────────────────────────────────────
+plot:
+	@latest=$$(ls -t $(RESULTS_DIR)/*.csv 2>/dev/null | head -1); \
+	if [ -n "$$latest" ]; then \
+		echo "Plotting: $$latest"; \
+		python3 tools/plot_results.py "$$latest"; \
+	else \
+		echo "No CSV files in $(RESULTS_DIR)/"; \
+		echo "Run 'make run-all' first."; \
+	fi
 
 # ─── Format ─────────────────────────────────────────────────────────────────
 format:
