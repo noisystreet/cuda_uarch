@@ -27,6 +27,8 @@ make run-precision     # Numerical precision analysis (TC vs CUDA Core)
 make run-register      # Register file pressure analysis
 make run-occupancy     # SM occupancy / block scheduling
 make run-switch        # Tensor Core vs CUDA Core switching overhead
+make run-constant      # Constant memory broadcast mechanism
+make run-atomic        # Atomic operations (FP32 + INT32) throughput
 make run-all           # Run all benchmarks and save results
 make plot              # Generate plots from archived results
 ```
@@ -47,7 +49,7 @@ cuda_uarch/
 ├── benchmarks/
 │   ├── common/          # config.h, timer.h, utils.h (shared infra)
 │   ├── instruction/     # latency_probe, throughput_probe
-│   ├── memory/          # global_mem_latency, global_mem_bw, cache_size_probe, shared_mem_bank
+│   ├── memory/          # global_mem_latency, global_mem_bw, cache_size_probe, shared_mem_bank, constant_mem_probe
 │   ├── scheduler/       # warp_scheduler_probe, warp_shuffle_probe
 │   └── advanced/        # peak_compute, sfu, denorm, precision, register, occupancy, switch
 ├── cmake/               # CMake modules

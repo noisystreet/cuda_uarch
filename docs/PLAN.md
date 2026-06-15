@@ -112,9 +112,9 @@ benchmarks/
 - **Cache line:** 128 B ✅
 - **L1 关联度:** 🔲 方法需改进
 
-#### 4.4 常量内存与纹理内存 (🔲 待完成)
-- 常量内存广播机制探测
-- 纹理内存缓存行为分析
+#### 4.4 常量内存与纹理内存 (✅ 常量内存完成, 🔲 纹理内存)
+- ✅ 常量内存广播机制探测 — 广播机制有效，比全局内存快 2-10x，缓存行 ≥64 B
+- 🔲 纹理内存缓存行为分析
 
 ---
 
@@ -163,12 +163,26 @@ benchmarks/
 - ✅ 特殊函数单元 (SFU) 吞吐: cosf/sinf/expf/logf/rsqrtf/tanhf/powf
 - ✅ 共享内存 Bank Conflict 分析
 - ✅ 非规格化数行为探测
+- ✅ 原子操作吞吐/延迟 — **FP32 hotspot ~750 MOPS/s, INT32 线性扩展至 24 GOPS/s**
+- ✅ 常量内存广播机制 — **广播有效，比全局内存快 2-10x**
+
+### Phase 8: 原子操作分析 (✅ 完成)
+
+#### 8.1 FP32 atomicAdd (✅ 完成)
+- ✅ Hotspot 争用: ~750 MOPS/s，不随线程数扩展
+- ✅ 分散写入: ~16 GOPS/s (256 threads 饱和)
+- ✅ 比非原子写入慢 4-76x
+
+#### 8.2 INT32 atomicAdd (✅ 完成)  
+- ✅ Hotspot 争用: 线性扩展至 24 GOPS/s (专用流水线)
+- ✅ 分散写入: ~16 GOPS/s (与 FP32 一致)
+- ✅ 比非原子写入仅慢 ~2.5x
 
 ---
 
 ### Phase 7: 综合分析报告 (✅ 完成)
 
-- **产出:** `docs/ANALYSIS.md` — 17 章完整分析报告 ✅
+- **产出:** `docs/ANALYSIS.md` — 19 章完整分析报告 ✅
 - 覆盖：指令延迟/吞吐、缓存层次、内存带宽/延迟、Warp 调度、峰值算力、
   SFU、Bank Conflict、非规格化数行为、数值精度、寄存器文件、Occupancy、
   Tensor Core 切换开销 ✅
@@ -247,8 +261,8 @@ cuda_uarch/
 | P1 | 缓存层次 | L1=128KB, L2=32MB, line=128B | ✅ |
 | P1 | 共享内存 Bank Conflict | stride 扫描 + 广播 | ✅ |
 | P1 | Warp 调度 + Shuffle | 分歧/并发/公平性 + shuffle/sync 指令 | ✅ |
-| P1 | **常量内存广播机制** | 常量内存读取延迟验证 | 🔲 |
-| P1 | **原子操作** | `atomicAdd` (FP32/INT32) 吞吐和延迟 | 🔲 |
+| P1 | **常量内存广播机制** | 广播有效，比全局内存快 2-10x，缓存行 ≥64 B | ✅ |
+| P1 | **原子操作** | FP32 hotspot ~750 MOPS/s, INT32 线性扩展至 24 GOPS/s | ✅ |
 | P2 | 峰值算力 | CUDA Core + Tensor Core | ✅ |
 | P2 | 特殊函数单元 (SFU) | 7 种 MUFU 指令 | ✅ |
 | P2 | Tensor Core 数值精度 | FP16/TF32 精度对比 | ✅ |

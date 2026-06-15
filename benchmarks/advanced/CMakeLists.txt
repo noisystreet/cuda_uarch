@@ -42,3 +42,9 @@ add_executable(switch_probe
     switch_probe.cu
 )
 target_link_libraries(switch_probe PRIVATE uarch_common)
+
+# ─── Atomic operations probe (FP32 + INT32) ─────────────────────────────
+add_executable(atomic_probe
+    atomic_probe.cu
+)
+target_link_libraries(atomic_probe PRIVATE uarch_common)

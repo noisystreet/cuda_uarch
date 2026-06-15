@@ -21,3 +21,9 @@ add_executable(shared_mem_bank
     shared_mem_bank.cu
 )
 target_link_libraries(shared_mem_bank PRIVATE uarch_common)
+
+# ─── Constant memory broadcast mechanism probe ────────────────────────────
+add_executable(constant_mem_probe
+    constant_mem_probe.cu
+)
+target_link_libraries(constant_mem_probe PRIVATE uarch_common)

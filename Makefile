@@ -20,7 +20,12 @@
 #   run-precision   — build + run precision_probe
 #   run-register    — build + run register_probe
 #   run-occupancy   — build + run occupancy_probe
+#   run-shuffle     — build + run warp_shuffle_probe
 #   run-switch      — build + run switch_probe (TC vs CUDA Core switch overhead)
+#   run-constant    — build + run constant_mem_probe (constant mem broadcast)
+#   run-atomic      — build + run atomic_probe (FP32+INT32 atomic throughput)
+#   run-all         — build + run all benchmarks + archive results
+#   plot            — generate plots from latest results CSV
 #   format          — clang-format all source files
 #   check-env       — verify tool chain
 #   help            — print this message
@@ -37,6 +42,7 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
         run-register run-occupancy run-shuffle run-switch \
+        run-constant run-atomic \
         run-all plot format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
@@ -104,6 +110,12 @@ run-shuffle: build
 run-switch: build
 	$(BUILD_DIR)/benchmarks/advanced/switch_probe
 
+run-constant: build
+	$(BUILD_DIR)/benchmarks/memory/constant_mem_probe
+
+run-atomic: build
+	$(BUILD_DIR)/benchmarks/advanced/atomic_probe
+
 # ─── Run all ─────────────────────────────────────────────────────────────────
 RESULTS_DIR ?= data/results
 RESULTS_FILE = $(RESULTS_DIR)/benchmark_$$(date +%Y%m%d_%H%M%S).csv
@@ -161,6 +173,12 @@ run-all: build
 	@echo "" >> $(RESULTS_FILE)
 	@echo "--- switch_probe ---" | tee -a $(RESULTS_FILE)
 	$(BUILD_DIR)/benchmarks/advanced/switch_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- constant_mem_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/memory/constant_mem_probe >> $(RESULTS_FILE)
+	@echo "" >> $(RESULTS_FILE)
+	@echo "--- atomic_probe ---" | tee -a $(RESULTS_FILE)
+	$(BUILD_DIR)/benchmarks/advanced/atomic_probe >> $(RESULTS_FILE)
 	@echo "" >> $(RESULTS_FILE)
 	@echo "=== ALL BENCHMARKS COMPLETE ===" | tee -a $(RESULTS_FILE)
 
