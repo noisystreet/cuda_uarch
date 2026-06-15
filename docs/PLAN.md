@@ -110,7 +110,8 @@ benchmarks/
 - **L2 大小:** 32 MB (与 nvidia-smi 一致) ✅
 - **L2 延迟:** ~133 ns (~200 cycles) ✅
 - **Cache line:** 128 B ✅
-- **L1 关联度:** 🔲 方法需改进
+- **L1 关联度:** ✅ (Chase-in-Data, ≥64 路)
+- **L2 关联度:** ✅ (Chase-in-Data, ≥24 路)
 
 #### 4.4 常量内存与纹理内存 (✅ 常量内存完成, 🔲 纹理内存)
 - ✅ 常量内存广播机制探测 — 广播机制有效，比全局内存快 2-10x，缓存行 ≥64 B
@@ -222,8 +223,9 @@ cuda_uarch/
 │   │   ├── CMakeLists.txt
 │   │   ├── global_mem_latency.cu  # ✅ 全局内存延迟
 │   │   ├── global_mem_bw.cu       # ✅ 全局内存带宽
-│   │   ├── cache_size_probe.cu    # ✅ 缓存大小/行大小/关联度
-│   │   └── shared_mem_bank.cu     # ✅ 共享内存 Bank Conflict
+│   │   ├── cache_size_probe.cu    # ✅ 缓存大小/行大小
+│   │   ├── associativity_probe.cu # ✅ Chase-in-Data 关联度
+│   │   ├── shared_mem_bank.cu     # ✅ 共享内存 Bank Conflict
 │   ├── scheduler/
 │   │   ├── CMakeLists.txt
 │   │   ├── warp_scheduler_probe.cu  # ✅ Warp 调度（分歧/并发/公平性）
@@ -270,7 +272,7 @@ cuda_uarch/
 | P2 | 寄存器文件 + Occupancy | `__launch_bounds__` + Block 调度策略 | ✅ |
 | P2 | Tensor Core 切换开销 | TC vs CUDA Core 无缝交替 | ✅ |
 | P2 | **SASS 反汇编分析** | `nvdisasm` 分析指令编码、FU 布局 | 🔲 |
-| P2 | **L1 关联度方法改进** | 当前 cache_size_probe 关联度探测不可靠 | 🔲 |
+| P2 | **L1 关联度方法改进** | Chase-in-Data 指针追逐法, L1≥64路, L2≥24路 | ✅ |
 | P2 | **Tensor Core Tile size** | m16n16k16 vs m8n8k4 等不同 tile 吞吐 | 🔲 |
 | P2 | **指令组合吞吐 (ILP 混合)** | FADD+FMUL、FFMA+IADD 等混合指令扫描 | 🔲 |
 | P2 | **nsys/ncu 交叉验证** | Nsight Compute 验证关键 benchmark 结果 | 🔲 |

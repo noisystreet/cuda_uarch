@@ -42,7 +42,7 @@ CMAKE_DEBUG  = -DCMAKE_BUILD_TYPE=Debug   -DCMAKE_CUDA_ARCHITECTURES=$(ARCH)
         run-latency run-throughput run-mem-lat run-mem-bw run-cache-size \
         run-shmem-bank run-scheduler run-peak run-sfu run-denorm run-precision \
         run-register run-occupancy run-shuffle run-switch \
-        run-constant run-atomic \
+        run-constant run-atomic run-associativity \
         run-all plot format check-env help
 
 # ─── Default ────────────────────────────────────────────────────────────────
@@ -115,6 +115,9 @@ run-constant: build
 
 run-atomic: build
 	$(BUILD_DIR)/benchmarks/advanced/atomic_probe
+
+run-associativity: build
+	$(BUILD_DIR)/benchmarks/memory/associativity_probe
 
 # ─── Run all ─────────────────────────────────────────────────────────────────
 RESULTS_DIR ?= data/results

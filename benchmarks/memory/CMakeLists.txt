@@ -27,3 +27,9 @@ add_executable(constant_mem_probe
     constant_mem_probe.cu
 )
 target_link_libraries(constant_mem_probe PRIVATE uarch_common)
+
+# ─── Cache associativity probe (pointer chasing × same-set) ───────────────
+add_executable(associativity_probe
+    associativity_probe.cu
+)
+target_link_libraries(associativity_probe PRIVATE uarch_common)
